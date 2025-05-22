@@ -5,6 +5,7 @@ Dynamic function re-exporter.
 
 import inspect
 import importlib
+from importlib import import_module
 import pkgutil
 from types import ModuleType
 from typing import Callable, Dict, List
@@ -65,13 +66,13 @@ def __getattr__(name: str):
 # --- Prompt-helper aliases -----------------------------------------------
 # Makes every file in llm_prompt_builders/prompts/ importable as a top-level
 # module, so `from is_relevant import ...` keeps working.
-_prompts_dir = Path(__file__).with_suffix("").parent / "prompts"
+_prompts_dir = Path(__file__).parent
 
 for _file in _prompts_dir.glob("*.py"):
     if _file.name == "__init__.py":
         continue
     _alias = _file.stem                     # e.g. "is_relevant"
-    _full  = f"{__name__}.prompts.{_alias}" # e.g. "llm_prompt_builders.prompts.is_relevant"
+    _full  = f"{__name__}.{_alias}"         # e.g. "llm_prompt_builders.prompts.is_relevant"
     _sys.modules.setdefault(_alias, import_module(_full))
 
 for _name in (
