@@ -85,20 +85,20 @@ def get_is_relevant(
         The purpose is {purpose}.\n
         The text is from {data_origin}.\n\n
         Return {{ \"is_relevant\": true }} **only if**:\n
-        • at least one *Look‑for* item appears in the paragraph, **and**\n
-        • none of the *Should‑NOT‑contain* items appear (if any are defined).\n\n
+        • at least one *Look-for* item appears in the paragraph, **and**\n
+        • none of the *Should-NOT-contain* items appear (if any are defined).\n\n
         Otherwise return {{ \"is_relevant\": false }}.\n\n
         Use lowercase booleans and nothing else.\n"""
     )
 
-    sections: List[str] = [_build_criteria_section("Look‑for (any of)", pos)]
+    sections: List[str] = [_build_criteria_section("Look-for (any of)", pos)]
     if neg:
-        sections.append(_build_criteria_section("Should‑NOT‑contain (any of)", neg))
+        sections.append(_build_criteria_section("Should-NOT-contain (any of)", neg))
 
     parts = [header, *sections]
 
     if _chain is not None:  # pragma: no cover
-        return _chain(*parts)
+        return _chain(parts)
 
     return "\n".join(parts).strip()
 
