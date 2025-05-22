@@ -79,17 +79,35 @@ def get_is_relevant(
     pos = list(positive_criteria or DEFAULT_POSITIVE_CRITERIA_IS_RELEVANT)
     neg = list(negative_criteria or [])
 
-    header = textwrap.dedent(
-        f"""\
-        TASK — Read one paragraph as an expert informatician.\n\n
-        The purpose is {purpose}.\n
-        The text is from {data_origin}.\n\n
-        Return {{ \"is_relevant\": true }} **only if**:\n
-        • at least one *Look-for* item appears in the paragraph, **and**\n
-        • none of the *Should-NOT-contain* items appear (if any are defined).\n\n
-        Otherwise return {{ \"is_relevant\": false }}.\n\n
-        Use lowercase booleans and nothing else.\n"""
+    header_lines = [
+        "TASK — Read one paragraph as an expert informatician.",
+        "",
+        f"The purpose is {purpose}.",
+        f"The text is from {data_origin}.",
+        "",
+        'Return { "is_relevant": true } **only if**:',
+    ]
+
+    first_bullet = "• at least one *Look-for* item appears in the paragraph"
+    if neg:
+        first_bullet += ", **and**"
+    header_lines.append(first_bullet)
+
+    if neg:
+        header_lines.append(
+            "• none of the *Should-NOT-contain* items appear (if any are defined)."
+        )
+
+    header_lines.extend(
+        [
+            "",
+            'Otherwise return { "is_relevant": false }.',
+            "",
+            "Use lowercase booleans and nothing else.",
+        ]
     )
+
+    header = textwrap.dedent("\n".join(header_lines)) + "\n"
 
     sections: List[str] = [_build_criteria_section("Look-for (any of)", pos)]
     if neg:

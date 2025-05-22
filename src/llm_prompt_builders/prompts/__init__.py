@@ -84,4 +84,4 @@ for _name in (
     "Path",
     "_sys",
 ):
-    globals().pop(_name, None)        # quietly ignore if the symbol never existed
+    globals().pop(_name, None)  # quietly ignore if the symbol never existed

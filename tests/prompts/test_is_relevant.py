@@ -52,3 +52,5 @@ def test_negative_criteria_section_present() -> None:
 
     prompt_without_neg = ir.get_is_relevant(origin, purpose)
     assert "should-not-contain" not in prompt_without_neg.lower()
+    assert "look-for" in prompt_without_neg.lower()
+    assert ", **and**" not in prompt_without_neg
