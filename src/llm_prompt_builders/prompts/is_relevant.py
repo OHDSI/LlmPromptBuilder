@@ -28,20 +28,50 @@ except ModuleNotFoundError:  # pragma: no cover – keeps the script self‑cont
 ###############################################################################
 # Default *positive* criteria – actionable details
 ###############################################################################
-DEFAULT_POSITIVE_CRITERIA_IS_RELEVANT: List[str] = [
-    "data source or care setting",
-    "demographic filter (age, sex, insurance, etc.)",
-    "entry/index event (diagnosis/procedure/drug/lab code, ≥ n codes, look‑back, first/second hit, etc.)",
-    "extra inclusion / exclusion rule",
-    "wash‑out or continuous‑enrollment window",
-    "exit/censor rule",
-    "outcome‑finding algorithm",
-    "explicit medical codes (ICD, SNOMED, CPT, RxNorm, ATC, LOINC …)",
-    "follow‑up / time‑at‑risk spec",
-    "comparator or exposure logic",
-    "validation stats (PPV, sensitivity)",
-    "attrition counts",
+POSITIVE_CRITERIA_FIND_PHENOTYPE_ALGORITHM_RELATED_TEXT: List[str] = [
+
+    # ─ P – Population / data source
+    r"data\s+source|dataset\s+name|Optum|CPRD|MarketScan|MIMIC",
+    r"care\s+(setting|site)|primary\s+care|inpatient|ambulatory",
+    r"EHR|EMR|claims\s+database|administrative\s+claims",
+    r"geographic\s+(catchment|region|country)",
+    r"age\s+range|sex|gender|race|ethnicity|insurance",
+    r"(enrollment|eligibility)\s+(window|criteria)|continuous\s+enrollment",
+    r"(baseline\s+)?(wash[-\s]?out|look[-\s]?back)",
+
+    # ─ I/T – Intervention / Target / Exposure
+    r"index\s+date|cohort\s+entry|time[- ]?zero",
+    r"(primary\s+)?exposure|drug|procedure|device|index\s+diagnosis",
+    r"ICD[- ]?9|ICD[- ]?10|SNOMED|CPT|HCPCS|LOINC|RxNorm|ATC",
+    r"≥\s*\d+\s*(codes?|occurrences?)|first|second\s+hit|incident\s+use",
+    r"dose|strength|days’?\s+supply|DDD|cumulative\s+exposure",
+    r"time[- ]varying\s+exposure|as[- ]treated|intent[- ]to[- ]treat",
+
+    # ─ C – Comparator / Control
+    r"active\s+comparator|reference\s+therapy|standard\s+of\s+care",
+    r"(unexposed|control)\s+cohort|negative\s+control",
+    r"propensity\s+score|(PS)\s*(matching|weighting|stratification)|IPTW|SMR",
+
+    # ─ O – Outcome / Validation
+    r"primary\s+endpoint|clinical\s+outcome|safety\s+event",
+    r"(outcome|phenotyping)\s+algorithm|rule[- ]based\s+classifier",
+    r"chart\s+review|manual\s+validation|gold\s+standard",
+    r"PPV|positive\s+predictive\s+value|sensitivity|specificity|F[- ]?score",
+    r"algorithm\s+accuracy|validation\s+statistics|AUROC|AUPRC",
+
+    # ─ T – Timing / Follow-up
+    r"follow[- ]up|time[- ]at[- ]risk|observation\s+window|risk\s+window",
+    r"censoring|end\s+of\s+follow[- ]up|study\s+end[- ]date",
+    r"grace\s+period|exposure\s+gap|latency\s+period",
+    r"immortal\s+time|landmark\s+analysis",
+
+    # ─ Extras / Reporting
+    r"inclusion\s+criteria|exclusion\s+criteria",
+    r"cohort\s+flow\s+diagram|attrition\s+counts|CONSORT",
+    r"(RECORD[- ]PE|STaRT[- ]RWE)\s+checklist",
 ]
+
+DEFAULT_POSITIVE_CRITERIA_IS_RELEVANT = POSITIVE_CRITERIA_FIND_PHENOTYPE_ALGORITHM_RELATED_TEXT
 
 ###############################################################################
 # Helper for bullet sections
