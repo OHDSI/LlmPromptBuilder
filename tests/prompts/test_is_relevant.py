@@ -14,7 +14,7 @@ import pytest
 
 from is_relevant import (
     DEFAULT_ACTIONABLE_BULLETS,
-    build_is_relevant_prompt,
+    get_is_relevant,
 )
 
 ###############################################################################
@@ -32,7 +32,7 @@ def _strip_ws(text: str) -> str:
 
 def test_default_prompt_contains_mandatory_fragments() -> None:
     """The default prompt must include both JSON answers & all canonical bullets."""
-    prompt = build_is_relevant_prompt(
+    prompt = get_is_relevant(
         data_origin="routine health data (claims, EHR, registry, etc.)",
         purpose="building or validating a computable cohort/phenotype",
     )
@@ -54,7 +54,7 @@ def test_custom_actionable_details_override_defaults() -> None:
         "signal‑noise ratio window",
         "hyper‑specific eligibility criterion",
     ]
-    prompt = build_is_relevant_prompt(
+    prompt = get_is_relevant(
         data_origin="claims data",
         purpose="validating a phenotype",
         details=custom_details,
@@ -71,7 +71,7 @@ def test_custom_actionable_details_override_defaults() -> None:
 
 def test_prompt_is_plain_string() -> None:
     """Regardless of the optional llm‑prompt‑builders dependency, output is str."""
-    prompt = build_is_relevant_prompt("claims", "cohort")
+    prompt = get_is_relevant("claims", "cohort")
     assert isinstance(prompt, str)
 
 
@@ -80,7 +80,7 @@ def test_prompt_is_plain_string() -> None:
 ###############################################################################
 
 def test_prompt_final_instruction() -> None:
-    prompt = build_is_relevant_prompt("claims", "cohort")
+    prompt = get_is_relevant("claims", "cohort")
     assert prompt.strip().endswith("Use lowercase booleans and nothing else."), (
         "Prompt must end with the lowercase‑boolean instruction",
     )
