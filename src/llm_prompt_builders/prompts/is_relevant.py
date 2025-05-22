@@ -98,7 +98,7 @@ def get_is_relevant(
     parts = [header, *sections]
 
     if _chain is not None:  # pragma: no cover
-        return _chain(*parts)
+        return _chain(parts)
 
     return "\n".join(parts).strip()
 
