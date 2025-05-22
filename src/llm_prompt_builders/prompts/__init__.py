@@ -74,4 +74,13 @@ for _file in _prompts_dir.glob("*.py"):
     _full  = f"{__name__}.prompts.{_alias}" # e.g. "llm_prompt_builders.prompts.is_relevant"
     _sys.modules.setdefault(_alias, import_module(_full))
 
-del _file, _alias, _full, _prompts_dir, import_module, Path, _sys
+for _name in (
+    "_file",
+    "_alias",
+    "_full",
+    "_prompts_dir",
+    "import_module",
+    "Path",
+    "_sys",
+):
+    globals().pop(_name, None)        # quietly ignore if the symbol never existed
