@@ -28,7 +28,7 @@ except ModuleNotFoundError:  # pragma: no cover – keeps the script self‑cont
 ###############################################################################
 # Default *positive* criteria – actionable details
 ###############################################################################
-DEFAULT_POSITIVE_CRITERIA: List[str] = [
+DEFAULT_POSITIVE_CRITERIA_IS_RELEVANT: List[str] = [
     "data source or care setting",
     "demographic filter (age, sex, insurance, etc.)",
     "entry/index event (diagnosis/procedure/drug/lab code, ≥ n codes, look‑back, first/second hit, etc.)",
@@ -55,7 +55,7 @@ def _build_criteria_section(label: str, items: Sequence[str]) -> str:
 # Public API
 ###############################################################################
 
-def build_is_relevant_prompt(
+def get_is_relevant(
     data_origin: str,
     purpose: str,
     positive_criteria: Sequence[str] | None = None,
@@ -76,7 +76,7 @@ def build_is_relevant_prompt(
         Items that *invalidate* relevance.  If *None* or empty, this section is
         omitted and only the *positive* test applies.
     """
-    pos = list(positive_criteria or DEFAULT_POSITIVE_CRITERIA)
+    pos = list(positive_criteria or DEFAULT_POSITIVE_CRITERIA_IS_RELEVANT)
     neg = list(negative_criteria or [])
 
     header = textwrap.dedent(
@@ -100,6 +100,11 @@ def build_is_relevant_prompt(
 # Re‑exports
 # ---------------------------------------------------------------------------
 __all__ = [
-    "DEFAULT_POSITIVE_CRITERIA",
-    "build_is_relevant_prompt",
+    "DEFAULT_POSITIVE_CRITERIA_IS_RELEVANT",
+    "get_is_relevant",
 ]
+
+from llm_prompt_builders.prompts.is_relevant import (  # type: ignore
+    get_is_relevant as _impl_build,
+    DEFAULT_POSITIVE_CRITERIA_IS_RELEVANT as _DEFAULT,
+)
