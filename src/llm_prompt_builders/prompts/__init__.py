@@ -8,6 +8,8 @@ import importlib
 import pkgutil
 from types import ModuleType
 from typing import Callable, Dict, List
+from pathlib import Path
+import sys as _sys
 
 __all__: List[str] = []          # populated at import time
 _functions: Dict[str, Callable] = {}  # optional: keep a registry if you need it
@@ -58,3 +60,18 @@ def __getattr__(name: str):
     if name in _functions:
         return _functions[name]
     raise AttributeError(f"module {__name__!r} has no attribute {name!r}")
+
+
+# --- Prompt-helper aliases -----------------------------------------------
+# Makes every file in llm_prompt_builders/prompts/ importable as a top-level
+# module, so `from is_relevant import ...` keeps working.
+_prompts_dir = Path(__file__).with_suffix("").parent / "prompts"
+
+for _file in _prompts_dir.glob("*.py"):
+    if _file.name == "__init__.py":
+        continue
+    _alias = _file.stem                     # e.g. "is_relevant"
+    _full  = f"{__name__}.prompts.{_alias}" # e.g. "llm_prompt_builders.prompts.is_relevant"
+    _sys.modules.setdefault(_alias, import_module(_full))
+
+del _file, _alias, _full, _prompts_dir, import_module, Path, _sys
