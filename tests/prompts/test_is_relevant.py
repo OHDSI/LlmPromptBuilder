@@ -13,7 +13,7 @@ from typing import List
 import pytest
 
 from is_relevant import (
-    DEFAULT_ACTIONABLE_BULLETS,
+    DEFAULT_POSITIVE_CRITERIA_IS_RELEVANT,
     get_is_relevant,
 )
 
@@ -44,7 +44,7 @@ def test_default_prompt_contains_mandatory_fragments() -> None:
     assert "{ \"is_relevant\": false }" in prompt_nows
 
     # Every canonical bullet should appear verbatim preceded by a bullet star.
-    for bullet in DEFAULT_ACTIONABLE_BULLETS:
+    for bullet in DEFAULT_POSITIVE_CRITERIA_IS_RELEVANT:
         assert f"* {bullet}" in prompt, f"Missing bullet: {bullet}"
 
 
@@ -65,7 +65,7 @@ def test_custom_actionable_details_override_defaults() -> None:
         assert f"* {bullet}" in prompt
 
     # … while *none* of the canonical ones appear.
-    for default in DEFAULT_ACTIONABLE_BULLETS:
+    for default in DEFAULT_POSITIVE_CRITERIA_IS_RELEVANT:
         assert f"* {default}" not in prompt
 
 
