@@ -81,7 +81,14 @@ def get_is_relevant(
 
     header = textwrap.dedent(
         f"""\
-        TASK — Read one paragraph as an expert informatician.\n\n        The purpose is {purpose}.\n        The text is from {data_origin}.\n\n        Return {{ \"is_relevant\": true }} **only if**:\n          • at least one *Look‑for* item appears in the paragraph, **and**\n          • none of the *Should‑NOT‑contain* items appear (if any are defined).\n\n        Otherwise return {{ \"is_relevant\": false }}.\n\n        Return false as well if the paragraph is only background, discussion, or a purely prospective randomized trial with no secondary‑data algorithm.\n\n        Use lowercase booleans and nothing else.\n"""
+        TASK — Read one paragraph as an expert informatician.\n\n
+        The purpose is {purpose}.\n
+        The text is from {data_origin}.\n\n
+        Return {{ \"is_relevant\": true }} **only if**:\n
+        • at least one *Look‑for* item appears in the paragraph, **and**\n
+        • none of the *Should‑NOT‑contain* items appear (if any are defined).\n\n
+        Otherwise return {{ \"is_relevant\": false }}.\n\n
+        Use lowercase booleans and nothing else.\n"""
     )
 
     sections: List[str] = [_build_criteria_section("Look‑for (any of)", pos)]
