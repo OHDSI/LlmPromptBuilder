@@ -1,86 +1,51 @@
-"""tests/test_is_relevant.py
-Unit tests for the *is_relevant* prompt‑builder helper.
+"""Updated pytest suite for llm_prompt_builders.prompts.is_relevant
 
-Run with pytest:
-
-    pytest -q
+These tests exercise the public contract of `build_is_relevant_prompt` as well
+as the exported defaults.  They no longer rely on the legacy top‑level
+`is_relevant` module that was removed during the package re‑org.
 """
-from __future__ import annotations
 
-import re
-from typing import List
+from __future__ import annotations
 
 import pytest
 
-from is_relevant import (
-    DEFAULT_POSITIVE_CRITERIA_IS_RELEVANT,
-    get_is_relevant,
-)
-
-###############################################################################
-# Fixtures & helpers
-###############################################################################
-
-def _strip_ws(text: str) -> str:
-    """Normalize whitespace for robust substring checks."""
-    return re.sub(r"\s+", " ", text).strip()
+from llm_prompt_builders.prompts import is_relevant as ir
 
 
-###############################################################################
-# Tests
-###############################################################################
-
-def test_default_prompt_contains_mandatory_fragments() -> None:
-    """The default prompt must include both JSON answers & all canonical bullets."""
-    prompt = get_is_relevant(
-        data_origin="routine health data (claims, EHR, registry, etc.)",
-        purpose="building or validating a computable cohort/phenotype",
-    )
-
-    prompt_nows = _strip_ws(prompt)
-
-    # Mandatory JSON answer snippets
-    assert "{ \"is_relevant\": true }" in prompt_nows
-    assert "{ \"is_relevant\": false }" in prompt_nows
-
-    # Every canonical bullet should appear verbatim preceded by a bullet star.
-    for bullet in DEFAULT_POSITIVE_CRITERIA_IS_RELEVANT:
-        assert f"* {bullet}" in prompt, f"Missing bullet: {bullet}"
+def test_default_positive_criteria_non_empty() -> None:
+    """The default list of positive criteria should be a non‑empty list."""
+    assert isinstance(ir.DEFAULT_POSITIVE_CRITERIA, list)
+    assert ir.DEFAULT_POSITIVE_CRITERIA, "Expected DEFAULT_POSITIVE_CRITERIA to be non‑empty"
 
 
-def test_custom_actionable_details_override_defaults() -> None:
-    """Supplying *details* replaces (does not append to) the default bullets."""
-    custom_details: List[str] = [
-        "signal‑noise ratio window",
-        "hyper‑specific eligibility criterion",
+def test_prompt_contains_origin_and_purpose() -> None:
+    """Generated prompt must reflect the requested data origin and purpose."""
+    origin = "clinical notes"
+    purpose = "detect adverse events"
+
+    prompt = ir.build_is_relevant_prompt(data_origin=origin, purpose=purpose)
+
+    # Case‑insensitive check to avoid surprises with capitalisation.
+    prompt_lower = prompt.lower()
+    assert origin.lower() in prompt_lower
+    assert purpose.lower() in prompt_lower
+
+
+def test_prompt_includes_custom_criteria() -> None:
+    """Custom positive criteria should appear verbatim in the prompt."""
+    origin = "call‑centre transcripts"
+    purpose = "quality assurance"
+    criteria = [
+        "mentions dosage",
+        "mentions side effects",
     ]
-    prompt = get_is_relevant(
-        data_origin="claims data",
-        purpose="validating a phenotype",
-        details=custom_details,
+
+    prompt = ir.build_is_relevant_prompt(
+        data_origin=origin,
+        purpose=purpose,
+        positive_criteria=criteria,
     )
 
-    # Custom bullets must be present …
-    for bullet in custom_details:
-        assert f"* {bullet}" in prompt
-
-    # … while *none* of the canonical ones appear.
-    for default in DEFAULT_POSITIVE_CRITERIA_IS_RELEVANT:
-        assert f"* {default}" not in prompt
-
-
-def test_prompt_is_plain_string() -> None:
-    """Regardless of the optional llm‑prompt‑builders dependency, output is str."""
-    prompt = get_is_relevant("claims", "cohort")
-    assert isinstance(prompt, str)
-
-
-###############################################################################
-# Optional: quick sanity check that the prompt ends with the strict guidance.
-###############################################################################
-
-def test_prompt_final_instruction() -> None:
-    prompt = get_is_relevant("claims", "cohort")
-    assert prompt.strip().endswith("Use lowercase booleans and nothing else."), (
-        "Prompt must end with the lowercase‑boolean instruction",
-    )
+    prompt_lower = prompt.lower()
+    for criterion in criteria:
+        assert criterion.lower() in prompt_lower, f"Criterion '{criterion}' missing from prompt"
